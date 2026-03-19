@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Record — Ceruleus Capital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cerulean: #2563a8;
+    --cerulean-light: #4a89d4;
+    --cerulean-pale: #dbeafe;
+    --cerulean-dark: #1a3f6f;
+    --ink: #0f1c2e;
+    --ink-muted: #4a5e75;
+    --ink-faint: #8fa3bb;
+    --surface: #f7f9fc;
+    --white: #ffffff;
+    --positive: #1a7a4a;
+    --positive-bg: #edf7f2;
+    --negative: #b91c1c;
+    --negative-bg: #fef2f2;
+    --border: #d4e0ee;
+    --shadow: 0 1px 3px rgba(15,28,46,0.08), 0 4px 16px rgba(15,28,46,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo-area h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--cerulean-dark);
+    letter-spacing: 0.02em;
+  }
+
+  .logo-area p {
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .header-badge {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--cerulean);
+    background: var(--cerulean-pale);
+    border: 1px solid #bfd5f0;
+    padding: 6px 14px;
+    border-radius: 2px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    background: var(--cerulean-dark);
+    padding: 20px 48px;
+    display: flex;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+
+  .stat-value.pos { color: #4ade80; }
+  .stat-value.neg { color: #f87171; }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* Main content */
+  .main {
+    padding: 40px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Year section */
+  .year-section {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .year-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .year-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--cerulean-dark);
+  }
+
+  .year-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .year-count {
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+
+  /* Table */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead {
+    background: var(--cerulean-dark);
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  thead th.num { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f0f6ff; }
+
+  td {
+    padding: 14px 16px;
+    color: var(--ink);
+    font-size: 12px;
+    vertical-align: middle;
+  }
+
+  td.num { text-align: right; }
+  td.muted { color: var(--ink-muted); }
+
+  .thesis-cell {
+    max-width: 220px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  .asset-tag {
+    font-weight: 500;
+    color: var(--cerulean-dark);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+
+  .direction-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .dir-L {
+    background: #eff6ff;
+    color: var(--cerulean);
+    border: 1px solid #bfd5f0;
+  }
+
+  .dir-S {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+  }
+
+  .pnl-positive {
+    color: var(--positive);
+    font-weight: 500;
+  }
+
+  .pnl-negative {
+    color: var(--negative);
+    font-weight: 500;
+  }
+
+  /* PnL bar cell */
+  .pnl-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .pnl-bar {
+    height: 4px;
+    border-radius: 2px;
+    width: 60px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .pnl-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  .fill-pos { background: var(--positive); }
+  .fill-neg { background: var(--negative); }
+
+  /* Status */
+  .status-closed {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    background: var(--cerulean-pale);
+    color: var(--cerulean-dark);
+    font-weight: 500;
+  }
+
+  .status-open {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    background: #fef9c3;
+    color: #854d0e;
+    font-weight: 500;
+  }
+
+  .notes-cell {
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-style: italic;
+    max-width: 160px;
+    line-height: 1.5;
+  }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--cerulean-dark);
+    color: var(--white);
+    border-color: var(--cerulean-dark);
+  }
+
+  /* Loading / error */
+  .loading {
+    padding: 60px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .data-source {
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 20px;
+    text-align: right;
+    letter-spacing: 0.08em;
+  }
+
+  .disclaimer {
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 900px) {
+    .header, .stats-bar, .main { padding-left: 20px; padding-right: 20px; }
+    .stats-bar { flex-wrap: wrap; gap: 20px; }
+    .stat-divider { display: none; }
+    table { font-size: 11px; }
+    td, thead th { padding: 10px 10px; }
+    .thesis-cell, .notes-cell { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-area">
+    <h1>Ceruleus Capital</h1>
+    <p>Verified Trade Record</p>
+  </div>
+  <div class="header-badge"><span class="live-dot"></span>Live Data</div>
+</div>
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat">
+    <span class="stat-label">Total Trades</span>
+    <span class="stat-value" id="statTotal">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Win Rate</span>
+    <span class="stat-value pos" id="statWinRate">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Avg PnL (Closed)</span>
+    <span class="stat-value" id="statAvgPnl">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Best Trade</span>
+    <span class="stat-value pos" id="statBest">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Open Positions</span>
+    <span class="stat-value" id="statOpen">—</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="filters">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('CLOSED', this)">Closed</button>
+    <button class="filter-btn" onclick="setFilter('OPEN', this)">Open</button>
+    <button class="filter-btn" onclick="setFilter('L', this)">Long</button>
+    <button class="filter-btn" onclick="setFilter('S', this)">Short</button>
+  </div>
+
+  <div id="tableContainer">
+    <div class="loading">Fetching trade data...</div>
+  </div>
+
+  <div class="data-source" id="dataSource"></div>
+
+  <div class="disclaimer">
+    <strong>Legal Disclaimer:</strong> This trade record is provided for informational and transparency purposes only. Past performance does not guarantee future results. Nothing herein constitutes investment advice, a solicitation, or an offer to invest. Ceruleus Capital is a private family office. All figures are reported in good faith.
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Replace with your published CSV URL when ready:
+// File → Share → Publish to web → CSV → copy link
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpzZKDpnDxhygjrkIYrNTvJwlc2Q9EplN39vjXrWcgzrgXIgjjnLXIdLeekFrDGDKrRQvbzU4hqIfb/pub?output=csv";
+
+// Fallback static data (from screenshot) used if live fetch fails
+const FALLBACK_DATA = [
+  { year: "2025", thesis: "", entryDate: "25-Jun-2025", exitDate: "26-Jun-2025", strategy: "Core", asset: "SBET", direction: "L", price: "15.3", priceNow: "18", allocation: "5", pnl: "17.65", status: "CLOSED", notes: "" },
+  { year: "2025", thesis: "", entryDate: "26-Jun-2025", exitDate: "27-Jun-2025", strategy: "Core", asset: "BTC", direction: "S", price: "109,400", priceNow: "112,750", allocation: "$680", pnl: "3.06", status: "CLOSED", notes: "" },
+  { year: "2025", thesis: "", entryDate: "27-Jun-2025", exitDate: "28-Jun-2025", strategy: "Core", asset: "SOL", direction: "L", price: "0.000028", priceNow: "0.000025", allocation: "-$400", pnl: "-10.71", status: "OPEN", notes: "*blended price from initial + current price" },
+  { year: "2025", thesis: "", entryDate: "28-Jun-2025", exitDate: "29-Jun-2025", strategy: "Core", asset: "BNB/BTC", direction: "L", price: "0.121", priceNow: "0.142", allocation: "$3,400", pnl: "17.36", status: "CLOSED", notes: "" },
+  { year: "2025", thesis: "", entryDate: "29-Jun-2025", exitDate: "30-Jun-2025", strategy: "Core", asset: "XPL", direction: "L", price: "5.03", priceNow: "8.36", allocation: "$9,800", pnl: "66.20", status: "CLOSED", notes: "*half tp at 7.47" },
+];
+
+let allTrades = [];
+let activeFilter = 'all';
+
+// ─── CSV PARSER ───────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return null;
+
+  const trades = [];
+  let currentYear = "";
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = parseCSVRow(lines[i]);
+    if (!row || row.length < 10) continue;
+
+    // Detect year rows (first cell looks like a 4-digit year)
+    if (row[0] && /^\d{4}$/.test(row[0].trim())) {
+      currentYear = row[0].trim();
+      continue;
+    }
+
+    // Skip header-like rows
+    if (row[1] && row[1].trim().toLowerCase() === 'entry date') continue;
+
+    const pnlRaw = row[9] ? row[9].replace('%','').trim() : "";
+    const pnlNum = parseFloat(pnlRaw);
+
+    if (!row[5] || !row[5].trim()) continue; // skip empty asset rows
+
+    trades.push({
+      year: currentYear || "2025",
+      thesis: row[0] || "",
+      entryDate: row[1] || "",
+      exitDate: row[2] || "",
+      strategy: row[3] || "",
+      asset: row[5] || "",
+      direction: row[6] || "",
+      price: row[7] || "",
+      priceNow: row[8] || "",
+      allocation: row[4] || "",
+      pnl: isNaN(pnlNum) ? pnlRaw : String(pnlNum),
+      status: (row[10] || "").trim().toUpperCase(),
+      notes: row[11] || "",
+    });
+  }
+
+  return trades.length > 0 ? trades : null;
+}
+
+function parseCSVRow(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQuotes = !inQuotes; }
+    else if (c === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += c; }
+  }
+  result.push(current);
+  return result;
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function computeStats(trades) {
+  const closed = trades.filter(t => t.status === 'CLOSED');
+  const pnls = closed.map(t => parseFloat(t.pnl)).filter(n => !isNaN(n));
+  const wins = pnls.filter(p => p > 0);
+  const avg = pnls.length ? pnls.reduce((a,b)=>a+b,0)/pnls.length : 0;
+  const best = pnls.length ? Math.max(...pnls) : 0;
+  const openCount = trades.filter(t => t.status === 'OPEN').length;
+
+  document.getElementById('statTotal').textContent = trades.length;
+  const wr = document.getElementById('statWinRate');
+  wr.textContent = pnls.length ? Math.round(wins.length/pnls.length*100)+'%' : '—';
+  wr.className = 'stat-value pos';
+
+  const avgEl = document.getElementById('statAvgPnl');
+  avgEl.textContent = pnls.length ? (avg>0?'+':'')+avg.toFixed(2)+'%' : '—';
+  avgEl.className = 'stat-value ' + (avg>=0?'pos':'neg');
+
+  document.getElementById('statBest').textContent = best ? '+'+best.toFixed(2)+'%' : '—';
+  document.getElementById('statOpen').textContent = openCount;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderTrades(trades) {
+  let filtered = trades;
+  if (activeFilter === 'CLOSED') filtered = trades.filter(t => t.status === 'CLOSED');
+  else if (activeFilter === 'OPEN') filtered = trades.filter(t => t.status === 'OPEN');
+  else if (activeFilter === 'L') filtered = trades.filter(t => t.direction === 'L');
+  else if (activeFilter === 'S') filtered = trades.filter(t => t.direction === 'S');
+
+  // Group by year
+  const byYear = {};
+  filtered.forEach(t => {
+    if (!byYear[t.year]) byYear[t.year] = [];
+    byYear[t.year].push(t);
+  });
+
+  const years = Object.keys(byYear).sort((a,b) => b-a);
+  const container = document.getElementById('tableContainer');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="loading">No trades match this filter.</div>';
+    return;
+  }
+
+  let html = '';
+  years.forEach((year, yi) => {
+    const yearTrades = byYear[year];
+    html += `
+      <div class="year-section" style="animation-delay:${yi*0.1}s">
+        <div class="year-header">
+          <span class="year-label">${year}</span>
+          <div class="year-line"></div>
+          <span class="year-count">${yearTrades.length} trade${yearTrades.length!==1?'s':''}</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Trade Thesis</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Strategy</th>
+                <th>Asset</th>
+                <th>Dir</th>
+                <th>Entry Price</th>
+                <th>Price Now / Exit</th>
+                <th class="num">Allocation</th>
+                <th class="num">PnL %</th>
+                <th>Status</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    yearTrades.forEach(t => {
+      const pnlNum = parseFloat(t.pnl);
+      const pnlValid = !isNaN(pnlNum);
+      const pnlClass = pnlValid ? (pnlNum >= 0 ? 'pnl-positive' : 'pnl-negative') : '';
+      const pnlDisplay = pnlValid ? (pnlNum>0?'+':'')+pnlNum.toFixed(2)+'%' : t.pnl;
+      const barPct = pnlValid ? Math.min(Math.abs(pnlNum)/70*100, 100) : 0;
+      const fillClass = pnlValid && pnlNum >= 0 ? 'fill-pos' : 'fill-neg';
+      const statusEl = t.status === 'CLOSED'
+        ? `<span class="status-closed">Closed</span>`
+        : `<span class="status-open">Open</span>`;
+      const dirEl = t.direction
+        ? `<span class="direction-badge dir-${t.direction}">${t.direction === 'L' ? 'Long' : 'Short'}</span>`
+        : '';
+
+      html += `
+        <tr>
+          <td class="thesis-cell">${t.thesis || '—'}</td>
+          <td class="muted">${t.entryDate}</td>
+          <td class="muted">${t.exitDate || '—'}</td>
+          <td class="muted">${t.strategy}</td>
+          <td><span class="asset-tag">${t.asset}</span></td>
+          <td>${dirEl}</td>
+          <td class="num">${t.price}</td>
+          <td class="num">${t.priceNow}</td>
+          <td class="num">${t.allocation}</td>
+          <td class="num">
+            <div class="pnl-bar-wrap">
+              <div class="pnl-bar"><div class="pnl-bar-fill ${fillClass}" style="width:${barPct}%"></div></div>
+              <span class="${pnlClass}">${pnlDisplay}</span>
+            </div>
+          </td>
+          <td>${statusEl}</td>
+          <td class="notes-cell">${t.notes}</td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// ─── FILTER ───────────────────────────────────────────────────────────────────
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTrades(allTrades);
+}
+
+// ─── FETCH ────────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(SHEET_CSV_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const parsed = parseCSV(text);
+    if (parsed && parsed.length > 0) {
+      allTrades = parsed;
+      document.getElementById('dataSource').innerHTML =
+        '<span class="live-dot"></span> Live data from Google Sheets · Last loaded ' + new Date().toLocaleTimeString();
+    } else {
+      throw new Error('Empty parse');
+    }
+  } catch(e) {
+    console.warn('Live fetch failed, using fallback data:', e);
+    allTrades = FALLBACK_DATA;
+    document.getElementById('dataSource').textContent =
+      'Displaying cached data · Connect live sheet for auto-updates';
+  }
+
+  computeStats(allTrades);
+  renderTrades(allTrades);
+}
+
+loadData();
+// Auto-refresh every 5 minutes
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
