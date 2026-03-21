@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Record — Ceruleus Capital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cerulean: #2563a8;
+    --cerulean-light: #4a89d4;
+    --cerulean-pale: #dbeafe;
+    --cerulean-dark: #1a3f6f;
+    --ink: #0f1c2e;
+    --ink-muted: #4a5e75;
+    --ink-faint: #8fa3bb;
+    --surface: #ffffff;
+    --white: #ffffff;
+    --positive: #1a7a4a;
+    --positive-bg: #edf7f2;
+    --negative: #b91c1c;
+    --negative-bg: #fef2f2;
+    --border: #d4e0ee;
+    --shadow: 0 1px 3px rgba(15,28,46,0.08), 0 4px 16px rgba(15,28,46,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo-area h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--cerulean-dark);
+    letter-spacing: 0.02em;
+  }
+
+  .logo-area p {
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .header-badge {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--cerulean);
+    background: var(--cerulean-pale);
+    border: 1px solid #bfd5f0;
+    padding: 6px 14px;
+    border-radius: 2px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    background: var(--cerulean-dark);
+    padding: 20px 48px;
+    display: flex;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+
+  .stat-value.pos { color: #4ade80; }
+  .stat-value.neg { color: #f87171; }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* Main content */
+  .main {
+    padding: 40px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Year section */
+  .year-section {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .year-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .year-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--cerulean-dark);
+  }
+
+  .year-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .year-count {
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+
+  /* Table */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead {
+    background: var(--cerulean-dark);
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  thead th.num { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f0f6ff; }
+
+  td {
+    padding: 14px 16px;
+    color: var(--ink);
+    font-size: 12px;
+    vertical-align: middle;
+  }
+
+  td.num { text-align: right; }
+  td.muted { color: var(--ink-muted); }
+
+  .thesis-cell {
+    max-width: 180px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  .thesis-link {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--cerulean);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .thesis-link:hover {
+    color: var(--cerulean-dark);
+    border-bottom-color: var(--cerulean-dark);
+  }
+
+  .asset-tag {
+    font-weight: 500;
+    color: var(--cerulean-dark);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+
+  .direction-badge {
+    display: inline-block;
+    width: 52px;
+    text-align: center;
+    padding: 2px 0;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .dir-L {
+    background: #eff6ff;
+    color: var(--cerulean);
+    border: 1px solid #bfd5f0;
+  }
+
+  .dir-S {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+  }
+
+  /* PnL bar */
+  .pnl-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .pnl-bar {
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .pnl-bar.pos { background: var(--positive); }
+  .pnl-bar.neg { background: var(--negative); }
+  .pnl-bar.neutral { background: var(--border); }
+
+  .pnl-value {
+    display: inline-block;
+    width: 72px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pnl-value.pos { color: var(--positive); font-weight: 500; }
+  .pnl-value.neg { color: var(--negative); font-weight: 500; }
+  .pnl-value.neutral { color: var(--ink-muted); }
+
+  /* Status */
+  .status-closed, .status-open {
+    display: inline-block;
+    width: 64px;
+    text-align: center;
+    padding: 3px 0;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .status-closed {
+    background: var(--cerulean-pale);
+    color: var(--cerulean-dark);
+  }
+
+  .status-open {
+    background: #fef9c3;
+    color: #854d0e;
+  }
+
+  .notes-cell {
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-style: italic;
+    max-width: 160px;
+    line-height: 1.5;
+  }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--cerulean-dark);
+    color: var(--white);
+    border-color: var(--cerulean-dark);
+  }
+
+  /* Loading / error */
+  .loading {
+    padding: 60px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .data-source {
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 20px;
+    text-align: right;
+    letter-spacing: 0.08em;
+  }
+
+  .disclaimer {
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 900px) {
+    .header, .stats-bar, .main { padding-left: 20px; padding-right: 20px; }
+    .stats-bar { flex-wrap: wrap; gap: 20px; }
+    .stat-divider { display: none; }
+    table { font-size: 11px; }
+    td, thead th { padding: 10px 10px; }
+    .thesis-cell, .notes-cell { display: none; }
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 0 2px;
+  }
+
+  .page-info {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+  }
+
+  .page-btns {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .page-btn {
+    padding: 6px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background: var(--cerulean-dark);
+    color: var(--white);
+    border-color: var(--cerulean-dark);
+  }
+
+  .page-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .page-num {
+    font-size: 11px;
+    color: var(--ink-muted);
+    padding: 0 8px;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat">
+    <span class="stat-label">Total Trades</span>
+    <span class="stat-value" id="statTotal">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Win Rate</span>
+    <span class="stat-value pos" id="statWinRate">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Avg PnL (Closed)</span>
+    <span class="stat-value" id="statAvgPnl">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Best Trade</span>
+    <span class="stat-value pos" id="statBest">—</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-label">Open Positions</span>
+    <span class="stat-value" id="statOpen">—</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="filters">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('CLOSED', this)">Closed</button>
+    <button class="filter-btn" onclick="setFilter('OPEN', this)">Open</button>
+    <button class="filter-btn" onclick="setFilter('L', this)">Long</button>
+    <button class="filter-btn" onclick="setFilter('S', this)">Short</button>
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; margin-bottom:8px;"><span id="dataSource" style="font-size:10px; color:var(--ink-faint); letter-spacing:0.08em; white-space:nowrap;"></span></div>
+  <div id="tableContainer">
+    <div class="loading">Fetching trade data...</div>
+  </div>
+
+  
+
+  <div class="disclaimer">
+    <strong>Legal Disclaimer:</strong> This trade record is provided for informational and transparency purposes only. Past performance does not guarantee future results. Nothing herein constitutes investment advice, a solicitation, or an offer to invest. Ceruleus Capital is a private family office. All figures are reported in good faith.
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Replace with your published CSV URL when ready:
+// File → Share → Publish to web → CSV → copy link
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpzZKDpnDxhygjrkIYrNTvJwlc2Q9EplN39vjXrWcgzrgXIgjjnLXIdLeekFrDGDKrRQvbzU4hqIfb/pub?output=csv";
+
+// Fallback static data (from screenshot) used if live fetch fails
+const FALLBACK_DATA = [
+  { year: "2026", thesis: "", entryDate: "June 25, 2025", exitDate: "June 26, 2025", strategy: "Core", asset: "SBET", direction: "L", price: "15.3", priceNow: "18", allocation: "5.0%", pnl: "17.65", status: "CLOSED", notes: "" },
+  { year: "2026", thesis: "", entryDate: "June 26, 2025", exitDate: "June 27, 2025", strategy: "Core", asset: "BTC", direction: "S", price: "109,400", priceNow: "112,750", allocation: "5.0%", pnl: "3.06", status: "CLOSED", notes: "" },
+  { year: "2026", thesis: "", entryDate: "June 27, 2025", exitDate: "June 28, 2025", strategy: "Core", asset: "SOL", direction: "L", price: "0.000028", priceNow: "0.000025", allocation: "5.0%", pnl: "-10.71", status: "OPEN", notes: "*blended price from initial + current price" },
+  { year: "2026", thesis: "", entryDate: "June 28, 2025", exitDate: "June 29, 2025", strategy: "Core", asset: "BNB/BTC", direction: "L", price: "0.121", priceNow: "0.142", allocation: "5.0%", pnl: "17.36", status: "CLOSED", notes: "" },
+  { year: "2026", thesis: "", entryDate: "June 29, 2025", exitDate: "June 30, 2025", strategy: "Core", asset: "XPL", direction: "L", price: "5.03", priceNow: "8.36", allocation: "5.0%", pnl: "66.20", status: "CLOSED", notes: "*half tp at 7.47" },
+];
+
+let allTrades = [];
+let activeFilter = 'all';
+let currentPage = 1;
+const TRADES_PER_PAGE = 5;
+
+// ─── DATE FORMATTER ──────────────────────────────────────────────────────────
+function formatDate(raw) {
+  if (!raw || !raw.trim()) return '—';
+  const str = raw.trim();
+
+  // Handle "25-Jun-25" or "25-Jun-2025" format from Google Sheets CSV
+  const shortMatch = str.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+  if (shortMatch) {
+    const months = {jan:'January',feb:'February',mar:'March',apr:'April',may:'May',jun:'June',
+                    jul:'July',aug:'August',sep:'September',oct:'October',nov:'November',dec:'December'};
+    const day = parseInt(shortMatch[1]);
+    const mon = months[shortMatch[2].toLowerCase()];
+    let year = parseInt(shortMatch[3]);
+    if (year < 100) year += 2000;
+    return `${mon} ${day}, ${year}`;
+  }
+
+  // Fallback: try native Date parsing
+  const d = new Date(str);
+  if (!isNaN(d)) {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  return str; // last resort: show as-is
+}
+
+// ─── CSV PARSER ───────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return null;
+
+  const trades = [];
+  let currentYear = "";
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = parseCSVRow(lines[i]);
+    if (!row || row.length < 5) continue;
+
+    // Detect year rows (first cell looks like a 4-digit year)
+    if (row[0] && /^\d{4}$/.test(row[0].trim())) {
+      currentYear = row[0].trim();
+      continue;
+    }
+
+    // Skip header-like rows
+    if (row[1] && row[1].trim().toLowerCase() === 'entry date') continue;
+    if (row[4] && row[4].trim().toLowerCase() === 'asset') continue;
+
+    // Columns: 0=Trade Thesis, 1=Entry Date, 2=Exit Date, 3=Strategy,
+    //          4=Asset, 5=Direction, 6=Price, 7=Current Price/Exit,
+    //          8=Allocation(%), 9=PnL(%), 10=Status, 11=Notes
+    const pnlRaw = row[9] ? row[9].replace('%','').trim() : "";
+    const pnlNum = parseFloat(pnlRaw);
+
+    if (!row[4] || !row[4].trim()) continue; // skip empty asset rows
+
+    trades.push({
+      year: currentYear || "2026",
+      thesis: row[0] || "",
+      entryDate: formatDate(row[1]),
+      exitDate: formatDate(row[2]),
+      strategy: row[3] || "",
+      asset: row[4] || "",
+      direction: (row[5] || "").trim(),
+      price: row[6] || "",
+      priceNow: row[7] || "",
+      allocation: (row[8] || "").trim(),
+      pnl: isNaN(pnlNum) ? pnlRaw : String(pnlNum),
+      status: (row[10] || "").trim().toUpperCase(),
+      notes: row[11] || "",
+    });
+  }
+
+  return trades.length > 0 ? trades : null;
+}
+
+function parseCSVRow(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQuotes = !inQuotes; }
+    else if (c === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += c; }
+  }
+  result.push(current);
+  return result;
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function computeStats(trades) {
+  const closed = trades.filter(t => t.status === 'CLOSED');
+  const pnls = closed.map(t => parseFloat(t.pnl)).filter(n => !isNaN(n));
+  const wins = pnls.filter(p => p > 0);
+  const avg = pnls.length ? pnls.reduce((a,b)=>a+b,0)/pnls.length : 0;
+  const best = pnls.length ? Math.max(...pnls) : 0;
+  const openCount = trades.filter(t => t.status === 'OPEN').length;
+
+  document.getElementById('statTotal').textContent = trades.length;
+  const wr = document.getElementById('statWinRate');
+  wr.textContent = pnls.length ? Math.round(wins.length/pnls.length*100)+'%' : '—';
+  wr.className = 'stat-value pos';
+
+  const avgEl = document.getElementById('statAvgPnl');
+  avgEl.textContent = pnls.length ? (avg>0?'+':'')+avg.toFixed(2)+'%' : '—';
+  avgEl.className = 'stat-value ' + (avg>=0?'pos':'neg');
+
+  document.getElementById('statBest').textContent = best ? '+'+best.toFixed(2)+'%' : '—';
+  document.getElementById('statOpen').textContent = openCount;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderTrades(trades) {
+  let filtered = trades;
+  if (activeFilter === 'CLOSED') filtered = trades.filter(t => t.status === 'CLOSED');
+  else if (activeFilter === 'OPEN') filtered = trades.filter(t => t.status === 'OPEN');
+  else if (activeFilter === 'L') filtered = trades.filter(t => t.direction === 'L');
+  else if (activeFilter === 'S') filtered = trades.filter(t => t.direction === 'S');
+
+  // Sort newest first
+  filtered = [...filtered].reverse();
+
+  // Pagination
+  const totalTrades = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalTrades / TRADES_PER_PAGE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * TRADES_PER_PAGE;
+  const paginated = filtered.slice(start, start + TRADES_PER_PAGE);
+
+  // Group paginated trades by year
+  const byYear = {};
+  paginated.forEach(t => {
+    if (!byYear[t.year]) byYear[t.year] = [];
+    byYear[t.year].push(t);
+  });
+
+  const years = Object.keys(byYear).sort((a,b) => b-a);
+  const container = document.getElementById('tableContainer');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="loading">No trades match this filter.</div>';
+    return;
+  }
+
+  let html = '';
+  years.forEach((year, yi) => {
+    const yearTrades = byYear[year];
+    html += `
+      <div class="year-section" style="animation-delay:${yi*0.1}s">
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Trade Thesis</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Strategy</th>
+                <th>Asset</th>
+                <th>Dir</th>
+                <th>Entry Price</th>
+                <th>Current Price / Exit</th>
+                <th class="num">Allocation</th>
+                <th class="num">PnL %</th>
+                <th>Status</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    yearTrades.forEach(t => {
+      const pnlNum = parseFloat(t.pnl);
+      const pnlValid = !isNaN(pnlNum);
+      const pnlDisplay = pnlValid ? (pnlNum>0?'+':'')+pnlNum.toFixed(2)+'%' : t.pnl;
+      const pnlClass = pnlValid ? (pnlNum > 0 ? 'pos' : 'neg') : 'neutral';
+      const statusEl = t.status === 'CLOSED'
+        ? `<span class="status-closed">Closed</span>`
+        : `<span class="status-open">Open</span>`;
+      const dirEl = t.direction
+        ? `<span class="direction-badge dir-${t.direction}">${t.direction === 'L' ? 'Long' : 'Short'}</span>`
+        : '';
+
+      html += `
+        <tr>
+          <td class="thesis-cell">${
+            t.thesis && t.thesis.trim().startsWith('http')
+              ? `<a class="thesis-link" href="${t.thesis.trim()}" target="_blank" rel="noopener">View &rarr;</a>`
+              : (t.thesis || '—')
+          }</td>
+          <td class="muted">${t.entryDate}</td>
+          <td class="muted">${t.exitDate || '—'}</td>
+          <td class="muted">${t.strategy}</td>
+          <td><span class="asset-tag">${t.asset}</span></td>
+          <td>${dirEl}</td>
+          <td class="num">${t.price}</td>
+          <td class="num">${t.priceNow}</td>
+          <td class="num">${t.allocation}</td>
+          <td class="num">
+            <div class="pnl-bar-wrap">
+              <div class="pnl-bar ${pnlClass}"></div>
+              <span class="pnl-value ${pnlClass}">${pnlDisplay}</span>
+            </div>
+          </td>
+          <td>${statusEl}</td>
+          <td class="notes-cell">${t.notes}</td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div></div>`;
+  });
+
+  // Add pagination controls
+  const paginationHtml = `
+    <div class="pagination">
+      <span class="page-info">Showing ${start + 1}–${Math.min(start + TRADES_PER_PAGE, totalTrades)} of ${totalTrades} trades</span>
+      <div class="page-btns">
+        <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>
+        <span class="page-num">${currentPage} / ${totalPages}</span>
+        <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html + paginationHtml;
+}
+
+// ─── FILTER ───────────────────────────────────────────────────────────────────
+function setFilter(f, btn) {
+  activeFilter = f;
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTrades(allTrades);
+}
+
+function goToPage(p) {
+  currentPage = p;
+  renderTrades(allTrades);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── FETCH ────────────────────────────────────────────────────────────────────
+async function loadData() {
+  // Show fallback immediately so table is never blank
+  if (allTrades.length === 0) {
+    allTrades = FALLBACK_DATA;
+    computeStats(allTrades);
+    renderTrades(allTrades);
+  }
+
+  try {
+    const res = await fetch(SHEET_CSV_URL, { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const parsed = parseCSV(text);
+    if (parsed && parsed.length > 0) {
+      allTrades = parsed;
+      document.getElementById('dataSource').innerHTML =
+        '<span class="live-dot"></span> <strong>Live Data</strong> &nbsp;·&nbsp; Last loaded ' + new Date().toLocaleTimeString();
+      computeStats(allTrades);
+      renderTrades(allTrades);
+    } else {
+      throw new Error('Empty parse');
+    }
+  } catch(e) {
+    console.warn('Live fetch failed, using fallback data:', e);
+    document.getElementById('dataSource').textContent =
+      'Cached data · Live sheet unavailable';
+  }
+}
+
+loadData();
+// Auto-refresh every 5 minutes
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
