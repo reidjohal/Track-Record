@@ -177,7 +177,7 @@
 
   thead th {
     padding: 12px 16px;
-    text-align: left;
+    text-align: center;
     font-size: 9px;
     font-weight: 400;
     color: rgba(255,255,255,0.6);
@@ -186,7 +186,6 @@
     white-space: nowrap;
   }
 
-  thead th.num { text-align: right; }
 
   tbody tr {
     border-bottom: 1px solid var(--border);
@@ -201,9 +200,9 @@
     color: var(--ink);
     font-size: 12px;
     vertical-align: middle;
+    text-align: center;
   }
 
-  td.num { text-align: right; }
   td.muted { color: var(--ink-muted); }
 
   .thesis-cell {
@@ -211,6 +210,7 @@
     font-size: 11px;
     color: var(--ink-muted);
     line-height: 1.5;
+    text-align: left;
   }
 
   .thesis-link {
@@ -237,34 +237,21 @@
   }
 
   .direction-badge {
-    display: inline-block;
-    width: 52px;
-    text-align: center;
-    padding: 2px 0;
-    border-radius: 2px;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
-  .dir-L {
-    background: #eff6ff;
-    color: var(--cerulean);
-    border: 1px solid #bfd5f0;
-  }
-
-  .dir-S {
-    background: #fff7ed;
-    color: #c2410c;
-    border: 1px solid #fed7aa;
-  }
+  .dir-L { color: var(--cerulean); }
+  .dir-S { color: #c2410c; }
 
   /* PnL bar */
   .pnl-bar-wrap {
     display: flex;
     align-items: center;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .pnl-bar {
@@ -281,12 +268,12 @@
   .pnl-value {
     display: inline-block;
     width: 72px;
-    text-align: right;
+    text-align: center;
     font-variant-numeric: tabular-nums;
   }
   .pnl-value.pos { color: var(--positive); font-weight: 500; }
   .pnl-value.neg { color: var(--negative); font-weight: 500; }
-  .pnl-value.neutral { color: var(--ink-muted); }
+  .pnl-value.neutral { color: var(--ink); font-weight: 400; }
 
   /* Status */
   .status-closed, .status-open {
@@ -317,6 +304,7 @@
     font-style: italic;
     max-width: 160px;
     line-height: 1.5;
+    text-align: left !important;
   }
 
   /* Filters */
@@ -595,12 +583,12 @@ function parseCSV(text) {
       year: currentYear || "2026",
       thesis: row[0] || "",
       entryDate: formatDate(row[1]),
-      exitDate: formatDate(row[2]),
+      exitDate: row[2] && row[2].trim() ? formatDate(row[2]) : '—',
       strategy: row[3] || "",
       asset: row[4] || "",
       direction: (row[5] || "").trim(),
       price: row[6] || "",
-      priceNow: row[7] || "",
+      priceNow: (row[7] || "").trim() || '—',
       allocation: (row[8] || "").trim(),
       pnl: isNaN(pnlNum) ? pnlRaw : String(pnlNum),
       status: (row[10] || "").trim().toUpperCase(),
@@ -695,9 +683,9 @@ function renderTrades(trades) {
                 <th>Exit</th>
                 <th>Strategy</th>
                 <th>Asset</th>
-                <th>Dir</th>
+                <th>Direction</th>
                 <th>Entry Price</th>
-                <th>Current Price / Exit</th>
+                <th>Exit Price</th>
                 <th class="num">Allocation</th>
                 <th class="num">PnL %</th>
                 <th>Status</th>
@@ -710,13 +698,13 @@ function renderTrades(trades) {
     yearTrades.forEach(t => {
       const pnlNum = parseFloat(t.pnl);
       const pnlValid = !isNaN(pnlNum);
-      const pnlDisplay = pnlValid ? (pnlNum>0?'+':'')+pnlNum.toFixed(2)+'%' : t.pnl;
+      const pnlDisplay = pnlValid ? (pnlNum>0?'+':'')+pnlNum.toFixed(2)+'%' : '0.00%';
       const pnlClass = pnlValid ? (pnlNum > 0 ? 'pos' : 'neg') : 'neutral';
       const statusEl = t.status === 'CLOSED'
         ? `<span class="status-closed">Closed</span>`
         : `<span class="status-open">Open</span>`;
       const dirEl = t.direction
-        ? `<span class="direction-badge dir-${t.direction}">${t.direction === 'L' ? 'Long' : 'Short'}</span>`
+        ? `<span class="direction-badge dir-${t.direction}">${t.direction === 'L' ? 'L' : 'S'}</span>`
         : '';
 
       html += `
@@ -734,14 +722,11 @@ function renderTrades(trades) {
           <td class="num">${t.price}</td>
           <td class="num">${t.priceNow}</td>
           <td class="num">${t.allocation}</td>
-          <td class="num">
-            <div class="pnl-bar-wrap">
-              <div class="pnl-bar ${pnlClass}"></div>
+          <td style="text-align:center;">
               <span class="pnl-value ${pnlClass}">${pnlDisplay}</span>
-            </div>
           </td>
           <td>${statusEl}</td>
-          <td class="notes-cell">${t.notes}</td>
+          <td class="notes-cell" style="text-align:left;">${t.notes}</td>
         </tr>
       `;
     });
